@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html style="height: 100%; margin: 0; padding: 0; scroll-snap-type: y mandatory;" onfocus="openFullscreen();">
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<title>Cy's Sites</title>
+	<style>
+		@import url('https://rsms.me/inter/inter.css');
+
+		h1 {
+			text-align: center;
+			font-weight: bold;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			margin-top: 20px;
+			letter-spacing: -0.5px;
+		}
+
+		p {
+			text-align: center;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+		}
+
+		.section {
+			height: 100vh;
+			scroll-snap-align: end;
+			scroll-snap-stop: always;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-attachment: fixed;
+			background-size: cover;
+			background-position: 0%;
+		}
+
+		.indiv {
+			text-align: center;
+			width: 100%;
+			max-width: 600px;
+			backdrop-filter: blur(32px) brightness(120%);
+			background-color: #3333334C;
+			/* padding-left: 16px; */
+			/* padding-right: 16px; */
+			padding: 16px;
+			margin: 8px;
+			border-radius: 16px;
+		}
+	</style>
+</head>
+<script>
+	var elem = document.documentElement;
+	function openFullscreen() {
+		if (elem.requestFullscreen) {
+			elem.requestFullscreen();
+		} else if (elem.mozRequestFullScreen) { /* Firefox */
+			elem.mozRequestFullScreen();
+		} else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+			elem.webkitRequestFullscreen();
+		} else if (elem.msRequestFullscreen) { /* IE/Edge */
+			elem.msRequestFullscreen();
+		}
+	}
+
+	function closeFullscreen() {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		} else if (document.msExitFullscreen) {
+			document.msExitFullscreen();
+		}
+	}
+</script>
+
+<body style="margin: 0; padding: 0;">
+	
+	<section class="section" style="background-color: transparent; z-index: -2;">
+		
+		<div>
+			<video autoplay muted loop id="myVideo" style="position: fixed;">
+				<source src="20200828_191257.mp4" type="video/mp4">
+			</video>
+			<div class='indiv'>
+				<h1>Welcome</h1>
+				<p>This is a portfolio of online sites that I host.</p>
+				<!-- <p>If you got here by a cyfinfaza.tk file sharing link, and werent expecting this page, simply replace
+			"cyfinfaza.tk" in the original url with "cycloud.tk" and you will be redirected to the file you are
+			attempting to view.</p> -->
+				<p style="margin-bottom: -20px;">arrow keys or scroll down</p>
+				<p style="margin-bottom: 8px;"><i class="material-icons" style="color: white;">expand_more</i></p>
+			</div>
+		</div>
+	</section>
+	<section class="section" style="background-image: url(BlueBackground.webp);" background-image: url(DJI_0081.jpg);">
+		<div class='indiv'>
+			<h1><a style="color: inherit;" href="https://cyfinfaza.tk">CyCloud</a></h1>
+			<p>Personal, private file hosting, operated by me, and powered by NextCloud.</p>
+		</div>
+	</section>
+	<section class="section" style="background-image: url(InsideComputer.jpg);" background-image: url(DJI_0081.jpg);">
+		<div class='indiv'>
+			<h1><a style="color: inherit;" href="https://www.cysupport.tk">CySupport</a></h1>
+			<p>Tech support, provided by me, either onsite or remote. This website describes what I offer, and contains
+				a gallery of images and videos of related things I have done in the past.</p>
+		</div>
+	</section>
+	<section class="section" style="background-image: url(boat.jpg); scroll-snap-stop: normal;">
+		<div class='indiv'>
+			<h1><a style="color: inherit;" href="https://readybelu.ga">ReadyBeluga</a></h1>
+			<p>A simple, free, and almost unlimited URL shortener.</p>
+		</div>
+	</section>
+	<div style="font-family: inter; font-weight: 100;">Even before you search, Google organizes information about
+		webpages in its Search index. The index is like a library, except it contains more info than in all the world’s
+		libraries put together.</div>
+
+</html>
+</body>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+
+<html id="everything" style="height: 100vh; margin: 0; padding: 0; scroll-behavior: smooth; background-color: white;">
+<audio id="audioplayer" style="transition: 1s;" src="https://radio.cy2.me:8000/example.ogg" onloadeddata="audioLoaded()"></audio>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"> -->
+    <!-- <link rel="icon" type="image/png" sizes="512x512" href="/cy2logo.png"> -->
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+    <title>Cy's Sites</title>
+    <style>
+        @import url('https://rsms.me/inter/inter.css');
+        p,
+        h1,
+        h2,
+        a,
+        td,
+        input {
+            text-align: center;
+            font-family: inter;
+            color: white;
+            font-feature-settings: "ss01";
+            letter-spacing: -0.5px;
+        }
+        
+        h1 {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        p {
+            font-size: 16px;
+        }
+        
+        .sent {
+            /* had stuff for p*/
+            align-self: flex-end;
+            margin-bottom: 4px;
+            margin-top: 0;
+            text-align: right;
+            overflow-wrap: break-word;
+            width: inherit;
+            margin-top: 4px;
+        }
+        
+        .recieved {
+            align-self: flex-start;
+            margin-bottom: 4px;
+            margin-top: 0;
+            text-align: left;
+            overflow-wrap: break-word;
+            margin-top: 4px;
+        }
+        
+        input {
+            font-family: inter;
+            color: white;
+            font-feature-settings: "ss01";
+            letter-spacing: -0.5px;
+            font-size: 16px;
+            height: 24px;
+            background-color: #ffffff22;
+            border-color: transparent;
+            border-radius: 8px;
+            text-indent: 10px;
+            font-family: Inter;
+            border-top-style: hidden;
+            border-right-style: hidden;
+            border-left-style: hidden;
+            border-bottom-style: groove;
+        }
+        
+        input:focus {
+            outline: none;
+        }
+        
+        button:focus {
+            outline: none;
+        }
+        
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .chat-control {
+            font-family: inter;
+            color: white;
+            font-feature-settings: "ss01";
+            letter-spacing: -0.5px;
+            font-size: 16px;
+            height: 24px;
+            background-color: #ffffff22;
+            border-color: transparent;
+            border-radius: 8px;
+            text-indent: 10px;
+            font-family: Inter;
+        }
+        
+        .disable-select {
+            user-select: none;
+            /* supported by Chrome and Opera */
+            -webkit-user-select: none;
+            /* Safari */
+            -khtml-user-select: none;
+            /* Konqueror HTML */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+        }
+        
+        #sidebar::-webkit-scrollbar {
+            width: 0px;
+            /* width of the entire scrollbar */
+        }
+        
+        div::-webkit-scrollbar {
+            width: 16px;
+            /* width of the entire scrollbar */
+        }
+        
+        #msgs::-webkit-scrollbar {
+            width: 8px;
+            /* width of the entire scrollbar */
+        }
+        
+        div::-webkit-scrollbar-track {
+            background: transparent;
+            /* color of the tracking area */
+        }
+        
+        div::-webkit-scrollbar-thumb {
+            background-color: #ffffff44;
+            /* color of the scroll thumb */
+            border-radius: 16px;
+            /* roundness of the scroll thumb */
+            border: 3px red;
+            /* creates padding around scroll thumb */
+            transform: translate(-15, -15);
+        }
+        
+        #msgs::-webkit-scrollbar-thumb {
+            background-color: #ffffff44;
+            /* color of the scroll thumb */
+            border-radius: 8px;
+            /* roundness of the scroll thumb */
+            border: 3px red;
+            /* creates padding around scroll thumb */
+            transform: translate(-15, -15);
+        }
+        
+        html::-webkit-scrollbar {
+            width: 0px;
+            /* width of the entire scrollbar */
+        }
+        
+        body::-webkit-scrollbar {
+            width: 0px;
+            /* width of the entire scrollbar */
+        }
+        
+         ::placeholder {
+            /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color: white;
+            opacity: 0.4;
+            margin-left: 10px;
+            /* Firefox */
+        }
+        
+        #sidebar {
+            overflow-y: scroll;
+            scrollbar-width: none;
+            height: 100vh;
+            width: auto;
+            justify-content: center;
+            display: flex;
+            background-color: black;
+        }
+        
+        #scrolly {
+            transition: 1s ease-in-out;
+        }
+        
+        .section {
+            height: 100%;
+            scroll-snap-align: end;
+            scroll-snap-stop: always;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: 0%;
+        }
+        
+        @keyframes fade {
+            0% {
+                /* background-color: red; */
+                opacity: 0;
+                left: 100px;
+                transform: scale(0.75);
+                /* transform: rotateX(-45deg); */
+                filter: contrast(2);
+            }
+            100% {
+                /* background-color: black; */
+                opacity: 1;
+                left: 100px;
+                transform: scale(1);
+                filter: none;
+                /* transform: rotateX(0deg); */
+            }
+        }
+        
+        @keyframes opacify {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes deopacify {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        
+        .opacify {
+            animation-name: opacify;
+            animation-duration: 0.25s;
+            animation-delay: 1s;
+            animation-fill-mode: backwards;
+            animation-timing-function: ease-out;
+        }
+        
+        .deopacify {
+            animation-name: deopacify !important;
+            animation-duration: 1s;
+            animation-delay: 0s !important;
+            animation-fill-mode: forwards !important;
+            animation-timing-function: ease-out;
+        }
+        
+        .hasfade {
+            animation-name: fade;
+            animation-duration: .5s;
+            animation-fill-mode: backwards;
+            animation-timing-function: ease;
+            text-decoration: unset;
+        }
+        
+        .sidebarlink {
+            animation-name: fade;
+            animation-duration: .5s;
+            animation-fill-mode: backwards;
+            animation-timing-function: ease;
+            text-decoration: unset;
+            /* animation-delay: random(1) !important; */
+        }
+        
+        .psw {
+            transform: rotate(-55deg);
+            font-weight: bold;
+            text-decoration: unset;
+        }
+        /* slightly transparent fallback */
+        
+        .indiv {
+            background-color: rgba(0, 0, 0, 1);
+        }
+        
+        .hoverfancy {
+            transition: all 240ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* transition-delay: 25ms; */
+        }
+        
+        @keyframes popout {
+            0% {
+                transform: scale(1);
+            }
+            80% {
+                transform: scale(1.24);
+            }
+            100% {
+                transform: scale(1.12);
+            }
+        }
+        
+        .hoverfancy:hover {
+            transform: scale(1.14);
+        }
+        
+        .hoverfancy:active {
+            transform: scale(1.06);
+        }
+        
+        .psw {
+            transition: 240ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* .psw:hover {
+			transform: scale(1.12) rotate(-55deg);
+			margin-top: 32px;
+			margin-bottom: 32px;
+		}
+
+		.psw:active {
+			transform: scale(1.06) rotate(-55deg);
+		} */
+        /* #sidebar:hover .psw{
+			transform: none;
+			margin-right: 16px;
+			margin-left: 16px;
+		} */
+        
+        #scrolldownbutton:hover #downArrow {
+            animation-duration: 0.75s;
+        }
+        
+        @keyframes updown {
+            0% {
+                transform: translateY(0) scaleX(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(4px) scaleX(0.9);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scaleX(1);
+                opacity: 0.7;
+            }
+        }
+        
+        #downArrow {
+            animation-name: updown;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease;
+            animation-fill-mode: backwards;
+        }
+        /* if backdrop support: very transparent and blurred (-webkit-backdrop-filter: blur(32px) brightness(120%)) or (backdrop-filter: blur(32px) brightness(120%);)*/
+        
+        @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+            .indiv {
+                -webkit-backdrop-filter: blur(32px) brightness(120%);
+                backdrop-filter: blur(32px) brightness(120%);
+                background-color: #3333334C;
+            }
+            #openMenuIcon {
+                -webkit-backdrop-filter: blur(32px) brightness(120%);
+                backdrop-filter: blur(32px) brightness(120%);
+                background-color: #9999994C !important;
+            }
+            #compatibilityMessage1 {
+                display: none;
+            }
+        }
+        
+        @supports (scroll-behavior: smooth) {
+            #compatibilityMessage2 {
+                display: none;
+            }
+        }
+        
+        .indiv {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            /* -webkit-backdrop-filter: blur(32px) brightness(120%);
+			backdrop-filter: blur(32px) brightness(120%);
+			background-color: #3333334C; */
+            /* padding-left: 16px; */
+            /* padding-right: 16px; */
+            padding: 16px;
+            margin: 8px;
+            border-radius: 16px;
+        }
+        
+        .whitelink {
+            color: #ffffff !important;
+        }
+        
+        @keyframes sidebarFadein {
+            0% {
+                background-color: #00000000;
+                opacity: 0;
+            }
+            100% {
+                background-color: #00000066;
+                opacity: 1;
+            }
+        }
+        
+        @keyframes sidebarFadeout {
+            0% {
+                opacity: 1;
+                background-color: #00000066;
+            }
+            100% {
+                opacity: 0;
+                background-color: #00000000;
+            }
+        }
+        
+        @media screen and (max-width: 616px) {
+            #sidebar {
+                /* visibility: collapse !important; */
+                position: fixed;
+                /* width: 0 !important; */
+                z-index: 5;
+                height: 100%;
+                width: 100%;
+                /* max-height: calc(100%-100px) !important; */
+                padding-top: 128px;
+                padding-bottom: 32px;
+                justify-content: start;
+                /* display: none; */
+                animation-duration: 1s;
+                animation-fill-mode: forwards;
+                pointer-events: none;
+                opacity: 0;
+                background-color: #00000000;
+                top: 0;
+                /* border-radius: 16px; */
+                /* align-self: start; */
+                /* justify-self: left !important; */
+                /* margin: 32px; */
+                /* transition: 1s; */
+                /* transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); */
+                /* min-width: 64px; */
+            }
+            @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+                .indiv {
+                    -webkit-backdrop-filter: blur(32px) brightness(120%);
+                    backdrop-filter: blur(32px) brightness(120%);
+                    background-color: #99999933;
+                }
+            }
+            .psw {
+                /* transform: none; */
+            }
+            #theactualone {
+                align-items: left !important;
+            }
+            #separator {
+                visibility: collapse !important;
+                width: 0 !important;
+            }
+            div::-webkit-scrollbar {
+                width: 0px;
+            }
+            #main-contain {
+                width: 100% !important;
+                height: 100% !important;
+                justify-content: left !important;
+            }
+            #scrolly {
+                border-radius: 0px !important;
+            }
+            #compatibilityMessage2 {
+                display: none;
+            }
+            .section {
+                height: 90%;
+                scroll-snap-align: none;
+                background-attachment: unset;
+                /* background-color: #FF0000FF; */
+                /* background: #FFFFFFff; */
+                box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, .3);
+                background-size: cover;
+                background-position: 50%;
+            }
+            .hoverfancy:hover {
+                transform: none;
+            }
+            .hoverfancy:active {
+                transform: scale(0.94);
+            }
+            .sidebarlink {
+                animation-name: none;
+            }
+            #openMenuIcon {
+                display: flex !important;
+            }
+        }
+        /* @media screen and (max-width: 616px) {
+			#sidebar {
+				visibility: collapse !important;
+				width: 0 !important;
+			}
+
+			#separator {
+				visibility: collapse !important;
+				width: 0 !important;
+			}
+
+			div::-webkit-scrollbar {
+				width: 0px;
+			}
+
+			#main-contain {
+				width: 100% !important;
+				height: 100% !important;
+			}
+
+			#scrolly {
+				border-radius: 0px !important;
+			}
+
+			#compatibilityMessage2 {
+				display: none;
+			}
+
+			.section {
+				height: 90%;
+				scroll-snap-align: none;
+			}
+
+			.hoverfancy:hover {
+				transform: none;
+			}
+
+			.hoverfancy:active {
+				transform: scale(0.94);
+			}
+		} */
+    </style>
+</head>
+<a id="openMenuIcon" class="hoverfancy" onclick="menuToggle()" style="margin-bottom: auto; display: none; position: fixed; z-index: 10; top: 32px; width: 48px; background-color: black;
+	height: 48px; border-radius: 24px; justify-content: center; align-items:center;"><i class="material-icons"
+		style="color: white; font-size: 28px;">menu</i></a>
+<div id="main-contain" style="width: calc(100% - 16px); height: calc(100% - 16px); display: flex; align-items: center; justify-content: center; background-color: black;">
+    <!-- <div id="loading" style="background-color: black;">
+		<div style="height: 30px; width: 30px; border-radius: 15px; background-color: red;"></div>
+	</div> -->
+
+    <body id="theactualone" onload="pageLoaded()" style="margin: 0px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; height: 100%; background-color: black;">
+        <!-- <div id="sidebar" style="background-color: black; display: block; width: 100px; box-sizing: border-box; border-radius: 8px; overflow: scroll; max-height: 100vh;">
+			<a class="hasfade" style="animation-delay: 0.1s;" href="#home"><img src="cy2.png" style="width: 100%;"></a>
+			<a class="hasfade" style="animation-delay: 0.2s;" href="#nextcloud"><img src="cycloudd.png"
+					style="width: 100%;"></a>
+			<a class="hasfade" style="animation-delay: 0.3s;" href="#cysupport"><img src="cysup.png"
+					style="width: 100%;"></a>
+			<a class="hasfade" style="animation-delay: 0.4s;" href="#readybeluga"><img src="readybeluga.png"
+					style="width: 100%;"></a>
+		</div> -->
+        <div id="sidebar" onclick="somethingClicked()" style="scrollbar-width: 0px; box-sizing: border-box; flex-direction: column; align-items: center; overflow-x: hidden;">
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.1s;" href="#home">
+                <p class="psw">WELCOME</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.2s;" href="#about">
+                <p class="psw">ABOUT</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.3s;" href="#nextcloud">
+                <p class="psw">CYCLOUD</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.4s;" href="#hx">
+                <p class="psw">HTML FUN</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.5s;" href="#uploadafile">
+                <p class="psw">UPLOADAFILE</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.6s;" href="#readybeluga">
+                <p class="psw">READYBELUGA</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.7s;" href="#oracle">
+                <p class="psw">THE ORACLE</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.8s;" href="#chat">
+                <p class="psw">NOCHAT</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 0.9s;" href="#4hcomputers">
+                <p class="psw">4H COMPUTERS</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 1s;" href="#cysupport">
+                <p class="psw">CYSUPPORT</p>
+            </a>
+            <a class="sidebarlink" id="audioOption" onclick="toggleAudio()" style="animation-delay: 1.1s; pointer-events: none; opacity: 0.5;">
+                <p class="psw disable-select"><i id="playicon" class="material-icons" style="color: white; transform: translateY(6px);">play_arrow</i>RADIO</p>
+            </a>
+            <a class="hoverfancy sidebarlink" style="animation-delay: 1s;" href="#contact">
+                <p class="psw">CONTACT</p>
+            </a>
+            <!-- <a class="hoverfancy sidebarlink" style="animation-delay: 0.9s;" onclick="makeItGoAway()">
+                <p class="psw">FUN BUTTON</p>
+            </a> -->
+            <!-- <button style="justify-self: start;" onclick="doPlay()">Pause</button> -->
+            <!-- <p style="margin-top: auto; color: #888888;">©2020 cy2.me</p> -->
+        </div>
+        <div id="separator" style="width: 8px;"></div>
+        <div class="hasfade" id="scrolly" style="width: 100%; height: 100%; margin: 8; overflow-y: scroll; border-radius: 8px; overflow: overlay; scroll-snap-type: y mandatory; scroll-behavior: smooth;">
+            <div id="home" class="section" style="background-image: url(tree.jpg);">
+                <div class='indiv'>
+                    <h1 id="hiImCyText">Hi, I'm Cy.</h1>
+                    <p>And this is my landing page. It's nice to meet you.</p>
+                    <p>Visit <a href="https://hx.cy2.me/links.html">links.cy2.me</a> for quick access to my sites and services.</p>
+                    <p id="compatibilityMessage1">For a fancy blur effect, try Edge or Chrome.</p>
+                    <p id="compatibilityMessage2">For smooth scrolling, try Edge or Chrome.</p>
+                    <button id="scrolldownbutton" class="hoverfancy" onclick="location.href='#about';" style="padding-left: 32px; padding-right: 32px; background-color: #ffffff00; border-color: transparent; border-radius: 16px;">
+						<p style="margin-bottom: -20px; margin-top: 8px;">scroll down</p>
+						<p id="downArrow" style="margin-bottom: 0px;"><i class="material-icons"
+								style="color: white;">expand_more</i>
+						</p>
+					</button>
+                </div>
+            </div>
+            <div id="about" class="section" style="background-image: url(tree.jpg);">
+                <div class='indiv'>
+                    <h1>About Me</h1>
+                    <p>I'm a Sophomore in high school, in New Jersey.</p>
+                    <button id="scrolldownbutton" class="hoverfancy" onclick="location.href='#nextcloud';" style="padding-left: 32px; padding-right: 32px; background-color: #ffffff00; border-color: transparent; border-radius: 16px;">
+						<p style="margin-bottom: -20px; margin-top: 8px;">keep scrolling</p>
+						<p id="downArrow" style="margin-bottom: 0px;"><i class="material-icons"
+								style="color: white;">expand_more</i>
+						</p>
+					</button>
+                </div>
+            </div>
+            <!-- <div tabindex="0" id="blank" style="height: 120%;"></div> -->
+            <div id="nextcloud" class="section" style="background-image: url(BlueBackground.webp); background-image:
+			url(DJI_0081.jpg);" onload="pageLoaded()">
+                <!-- document.getElementById('everything').style = 'animation-name: goaway; animation-duration: .25s;';  -->
+                <div class='indiv hoverfancy' onclick="window.location = 'https://cycloudd.tk';">
+                    <h1><a style="color: inherit;" href="https://cycloudd.tk">CyCloud</a></h1>
+                    <p>Personal, private file hosting, operated by me, and powered by Nextcloud.</p>
+                </div>
+            </div>
+            <div id="hx" class="section" style="background-image: url(BlueBackground.webp); background-image:
+			url(DJI_0081.jpg);" onload="pageLoaded()">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://hx.cy2.me';">
+                    <h1><a style="color: inherit;" href="https://hx.cy2.me">HTML Experiments</a></h1>
+                    <p>Fun with HTML. Pages with various levels of completion, mostly without a use yet. Think you have a use for them? <a style="pointer-events: all;" href="#contact">Get in touch.</a> Don't steal my work, especially without proper attribution.
+                        Thanks!
+                    </p>
+                </div>
+            </div>
+            <div id="cysupport" class="section" style="background-image: url(InsideComputer.jpg);">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://www.cysupport.tk';">
+                    <h1><a style="color: inherit;" href="https://www.cysupport.tk">CySupport</a></h1>
+                    <p>
+                        A Google Site describing my theorized tech support service. It is still unclear whether it will be viable for me to persue this endeavor at the moment.
+                    </p>
+                </div>
+            </div>
+            <div id="readybeluga" class="section" style="background-image: url(boat.jpg); scroll-snap-stop: normal;">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://readybelu.ga';">
+                    <h1><a style="color: inherit;" href="https://readybelu.ga">ReadyBeluga</a></h1>
+                    <p>A simple, free, and almost unlimited URL shortener.</p>
+                </div>
+            </div>
+            <div id="oracle" class="section" style="background-image: url(godWater.JPG); scroll-snap-stop: normal;">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://oracle.cy2.me';">
+                    <h1><a style="color: inherit;" href="https://oracle.cy2.me">oracle.cy2.me</a></h1>
+                    <p>A random message from the oracle. Just for you. Reload for more, or GET <a class="whitelink hoverfancy" href="https://oracle.cy2.me/api">oracle.cy2.me/api</a> for an unformatted version you can use in your apps.</p>
+                </div>
+            </div>
+            <div id="chat" class="section" style="background-image: url(chat-bkg.jpg); max-height: 100vh; scroll-snap-stop: normal;">
+                <div class='indiv'>
+                    <h1>Let's chat.</h1>
+                    <p id="subt" style="margin-top: -16px;">Chat with the group here, using <a class="whitelink" href="chat.html">nochat</a>.</p>
+                    <div id="msgs" style="max-height: 250px; margin-left: 16px; padding-left: 0px; padding-right: 8px; display: flex; flex-direction: column; justify-content: end; min-height: 64px; overflow-y: scroll; overflow-x: hidden;">
+                    </div>
+                    <div style="width: 100%; display: flex; flex-direction: row; margin-top: 16px;">
+                        <button class="chat-control hoverfancy" id="status" onclick="connect(); this.onclick = null;" style="height: 30px; max-width: 100%; white-space: nowrap; margin-right: 8px; text-indent: 0px !important; background-color: #FFFF0022;">click
+							to connect</button>
+                        <input type="text" id="msg" style="width: 100%;" placeholder="Type a message" onkeydown="if(event.keyCode == 13) {send();}">
+                        <button class="chat-control hoverfancy" style="height: 30px; margin-left: 8px; text-indent: 0px !important;" onclick="send()">send</button>
+                        <button class="chat-control hoverfancy" style="height: 30px; margin-left: 8px; text-indent: 0px !important;" onclick="window.open('https://cy2.me/chat.html');"><i class="material-icons"
+								style="font-size: 24px; color: white;">launch</i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="4hcomputers" class="section" style="background-image: url(4h1.jpg); scroll-snap-stop: normal;">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://wiki.4hcomputers.club';">
+                    <h1><a style="color: inherit;" href="https://wiki.4hcomputers.club">4H Wiki</a></h1>
+                    <p>Something new about 4H and the new landing page. </p>
+                </div>
+            </div>
+            <div id="contact" class="section" style="background-image: url(4h1.jpg); scroll-snap-stop: normal;">
+                <div class='indiv hoverfancy' onclick="window.location = 'https://wiki.4hcomputers.club';">
+                    <h1><a style="color: inherit;" href="https://wiki.4hcomputers.club">Let's get in touch.</a></h1>
+                    <p>Available on Telegram at the moment. </p>
+                    <p><a href="https://t.me/cyfinfaza">t.me/cyfinfaza</a></p>
+                </div>
+            </div>
+            <div style="font-family: inter; font-weight: 100; color: #888888; text-align: center; text-indent: 0px;">
+                HidingBeluga says: Even before you search, Google organizes information about webpages in its Search index. The index is like a library, except it contains more info than in all the world's libraries put together.</div>
+        </div>
+    </body>
+    <script>
+        typeAnimate('hiImCyText', 75)
+
+        //CHAT
+        //document.getElementById("msg").focus();
+        console.log("im alive");
+        clientid = "u" + parseInt(Math.random() * 10000000);
+        username = "ano" + parseInt(Math.random() * 1000);
+        chatid = "c0";
+        //connect();
+        function connect() {
+            statusindicator = document.getElementById("status");
+            statusindicator.innerHTML = "connecting";
+            statusindicator.style.backgroundColor = "#ffff0022";
+            client = new Paho.MQTT.Client("mq02.cy2.me", 8080, clientid);
+            client.onMessageArrived = onMessageArrived;
+            client.onConnectionLost = onFailure;
+            deleteNext = false;
+            client.connect({
+                onSuccess: onConnect,
+                // onFailure: document.getElementById("messages").innerHTML += '<span>ERROR: Connection to: ' + host + ' on port: ' + port + ' failed.</span><br/>';
+                onFailure: onFailure,
+                useSSL: true
+            });
+        }
+
+        function reconnect() {
+            client.disconnect();
+            useridt = document.getElementById("userid");
+            chatidt = document.getElementById("chatid");
+            if (useridt.value != "") username = useridt.value;
+            if (chatidt.value != "" && chatidt.value != chatid) {
+                chatid = chatidt.value;
+                connect();
+            } else {
+                statusindicator = document.getElementById("status");
+                statusindicator.innerHTML = username + "@" + chatid;
+                statusindicator.style.backgroundColor = "#00ff0022";
+            }
+            useridt.value = "";
+            chatidt.value = "";
+        }
+
+        function onFailure() {
+            console.log("failure")
+            statusindicator = document.getElementById("status");
+            statusindicator.innerHTML = "offline";
+            statusindicator.style.backgroundColor = "#ff000022";
+            client.connect({
+                onSuccess: onConnect,
+                onFailure: onFailure,
+                useSSL: true
+            });
+        }
+
+        function onConnect() {
+            statusindicator = document.getElementById("status");
+            statusindicator.className = "chat-control";
+            statusindicator.style.backgroundColor = "#00ff0022";
+            document.getElementById("status").innerHTML = "...";
+            client.subscribe(chatid);
+            statusindicator.innerHTML = username + "@" + chatid;
+            statusindicator.style.backgroundColor = "#00ff0022";
+            console.log("Subscribed.");
+            // document.getElementById("msg").focus();
+        }
+
+        function onMessageArrived(message) {
+            console.log("rx: " + message.payloadString);
+            if (!deleteNext) {
+                mgsg = document.getElementById("msgs");
+                msgs.innerHTML += '<p class="recieved">' + message.payloadString + '</p>';
+                msgs.scrollTop = msgs.scrollHeight;
+            }
+            deleteNext = false;
+        }
+
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+            }
+        }
+
+        function send() {
+            elem = document.getElementById("msg");
+            message = new Paho.MQTT.Message(username + ": " + elem.value);
+            message.destinationName = chatid;
+            // var message = new Messaging.Message(elem.value);
+            // message.destinationName = chatid;
+            // // message.qos = qos;
+            client.send(message);
+            deleteNext = true;
+            msgs.innerHTML += '<p class="sent">' + username + ": " + elem.value + '</p>';
+            elem.value = "";
+            msgs.scrollTop = msgs.scrollHeight;
+            document.getElementById("msg").focus();
+        }
+        //AUDIO
+        var audioplayer = document.getElementById('audioplayer');
+        var playicon = document.getElementById('playicon');
+        audioplayer.volume = 0;
+        var audioPlaying = false;
+        if (window.location.hash == "#playradio") {
+            toggleAudio();
+        }
+        if (window.location.hash == "#fromnotbeta") {
+            var mainthing = document.getElementById("theactualone");
+            mainthing.classList.add("opacify");
+        }
+        // function doPause() {
+        // 	fadeOut('audioplayer', 0.5);
+        // }
+        // function doPlay() {
+        // 	fadeIn('audioplayer', 0.5);
+        // }
+        function audioLoaded() {
+            var audioOption = document.getElementById('audioOption');
+            // audioOption.style.display = "block";
+            // audioOption.style.scale = "none";
+            audioOption.className = "hasfade hoverfancy";
+            audioOption.style.opacity = "1";
+            audioOption.style.pointerEvents = "all";
+            if (!audioPlaying) playicon.innerHTML = "play_arrow";
+        }
+        var toggleSpeed = 0.25;
+
+        function toggleAudio() {
+            if (audioPlaying) {
+                playicon.innerHTML = "play_arrow"
+                fadeOut('audioplayer', toggleSpeed);
+                audioPlaying = false;
+            } else {
+                audioplayer.play();
+                playicon.innerHTML = "stop";
+                fadeIn('audioplayer', toggleSpeed);
+                audioPlaying = true;
+            }
+        }
+
+        function fadeOut(audiosnippetId, time) {
+            var sound = document.getElementById(audiosnippetId);
+            sound.volume = 1;
+            var fadeAudio = setInterval(function() {
+                sound.volume -= 0.1;
+                if (sound.volume <= 0.1) {
+                    clearInterval(fadeAudio);
+                }
+            }, 100 * time);
+        }
+
+        function fadeIn(audiosnippetId, time) {
+            var sound = document.getElementById(audiosnippetId);
+            sound.volume = 0;
+            var fadeAudio = setInterval(function() {
+                sound.volume += 0.1;
+                if (sound.volume >= 0.9) {
+                    clearInterval(fadeAudio);
+                }
+            }, 100 * time);
+        }
+
+        function pageLoaded() {
+            console.log("loaded");
+            theactualone = document.getElementById("theactualone");
+            //theactualone.style.display = "block";
+        }
+        //MENU LOGIC
+        var menuOpen = false;
+
+        function somethingClicked() {
+            const mediaQuery = window.matchMedia('screen and (max-width: 616px)')
+            if (mediaQuery.matches) closeMenu();
+        }
+
+        function openMenu() {
+            var scrolly = document.getElementById('scrolly');
+            scrolly.style.transition = "1s";
+            scrolly.style.filter = "blur(64px)";
+            var sidebar = document.getElementById('sidebar');
+            sidebar.style.animationDuration = "1s";
+            sidebar.style.animationName = "sidebarFadein";
+            sidebar.style.pointerEvents = "all";
+            // Get a NodeList of all .demo elements
+            const demoClasses = document.querySelectorAll('.sidebarlink');
+
+            // Change the text of multiple elements with a loop
+            demoClasses.forEach(element => {
+                // element.style.display = "none";
+                element.style.animationName = "fade";
+            });
+            menuOpen = true;
+        }
+
+        function closeMenu() {
+            var scrolly = document.getElementById('scrolly');
+            scrolly.style.transition = "0.35s";
+            scrolly.style.filter = "none";
+            var sidebar = document.getElementById('sidebar');
+            sidebar.style.animationDuration = "0.35s";
+            sidebar.style.animationName = "sidebarFadeout";
+            sidebar.style.pointerEvents = "none";
+            // Get a NodeList of all .demo elements
+            const demoClasses = document.querySelectorAll('.sidebarlink');
+
+            // Change the text of multiple elements with a loop
+            demoClasses.forEach(element => {
+                // element.style.display = "none";
+                element.style.animationName = "none";
+            });
+            menuOpen = false;
+        }
+
+        function menuToggle() {
+            // // Get a NodeList of all .demo elements
+            // const demoClasses = document.querySelectorAll('.sidebarlink');
+
+            // // Change the text of multiple elements with a loop
+            // demoClasses.forEach(element => {
+            // 	// element.style.display = "none";
+            // 	element.style.transform = "scale(0)";
+            // });
+            // var sidebar = document.getElementById('sidebar');
+            // sidebar.style.paddingTop = "0";
+            // sidebar.style.paddingBottom = "0";
+            // sidebar.style.borderRadius = "32px";
+            // // sidebar.style.width = "64px";
+            // // sidebar.style.height = "64px";
+            // var openMenuIcon = document.getElementById('openMenuIcon');
+            // openMenuIcon.style.marginBottom = "0";
+            // openMenuIcon.style.height = "64px";
+            // openMenuIcon.style.width = "64px";
+            if (!menuOpen) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        }
+
+        function makeItGoAway() {
+            // const demoClasses = document.querySelectorAll('.sidebarlink');
+            // demoClasses.forEach(element => {
+            // 	element.style.animationName = "none";
+            // });
+            // demoClasses.forEach(element => {
+            // 	element.style.animationDirection = "reverse";
+            // 	element.style.animationFillMode = "forwards";
+            // });
+            // demoClasses.forEach(element => {
+            // 	element.style.animationName = "fade";
+            // });
+            var mainthing = document.getElementById("theactualone");
+            mainthing.classList.add("deopacify");
+            setTimeout(() => {
+                window.location.hash = "#fromnotbeta";
+                document.location.reload();
+            }, 1000);
+            // document.location.reload();
+        }
+
+        function typeAnimate(elemID, time) {
+            var elem = document.getElementById(elemID)
+            var message = elem.innerHTML
+            elem.innerHTML = ""
+            var pos = 0;
+            setInterval(() => {
+                elem.innerHTML += message.charAt(pos++)
+                if (pos >= message.length) clearInterval();
+            }, time);
+        }
+    </script>
+</div>
+
+</html>

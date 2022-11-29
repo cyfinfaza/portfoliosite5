@@ -1,0 +1,355 @@
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"> -->
+	<!-- <link rel="icon" type="image/png" sizes="512x512" href="/cy2logo.png"> -->
+	<link rel="icon" href="/favicon.ico">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"
+		type="text/javascript"></script>
+	<title>nochat</title>
+	<style>
+		@import url('https://rsms.me/inter/inter.css');
+
+		h1 {
+			text-align: center;
+			font-weight: bold;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			margin-top: 20px;
+			letter-spacing: -0.5px;
+		}
+
+		p {
+			text-align: center;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+			font-size: 16px;
+		}
+
+		.sent {
+			text-align: center;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+			font-size: 16px;
+			align-self: flex-end;
+			margin-bottom: 4px;
+			margin-top: 0;
+			text-align: right;
+			overflow-wrap: break-word;
+			width: inherit;
+			margin-top: 4px;
+		}
+
+		.recieved {
+			text-align: center;
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+			font-size: 16px;
+			align-self: flex-start;
+			margin-bottom: 4px;
+			margin-top: 0;
+			text-align: left;
+			overflow-wrap: break-word;
+			margin-top: 4px;
+		}
+
+		input {
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+			font-size: 16px;
+			height: 24px;
+			background-color: #ffffff22;
+			border-color: transparent;
+			border-radius: 8px;
+			text-indent: 10px;
+			font-family: Inter;
+		}
+
+		.chat-control {
+			font-family: inter;
+			color: white;
+			font-feature-settings: "ss01";
+			letter-spacing: -0.5px;
+			font-size: 16px;
+			height: 24px;
+			background-color: #ffffff22;
+			border-color: transparent;
+			border-radius: 8px;
+			text-indent: 10px;
+			font-family: Inter;
+		}
+
+		#sidebar::-webkit-scrollbar {
+			width: 0px;
+			/* width of the entire scrollbar */
+		}
+
+		div::-webkit-scrollbar {
+			width: 16px;
+			/* width of the entire scrollbar */
+		}
+
+		#msgs::-webkit-scrollbar {
+			width: 8px;
+			/* width of the entire scrollbar */
+		}
+
+		div::-webkit-scrollbar-track {
+			background: transparent;
+			/* color of the tracking area */
+		}
+
+		div::-webkit-scrollbar-thumb {
+			background-color: #ffffff44;
+			/* color of the scroll thumb */
+			border-radius: 16px;
+			/* roundness of the scroll thumb */
+			border: 3px red;
+			/* creates padding around scroll thumb */
+			transform: translate(-15, -15);
+		}
+
+		#msgs::-webkit-scrollbar-thumb {
+			background-color: #ffffff44;
+			/* color of the scroll thumb */
+			border-radius: 8px;
+			/* roundness of the scroll thumb */
+			border: 3px red;
+			/* creates padding around scroll thumb */
+			transform: translate(-15, -15);
+		}
+
+		html::-webkit-scrollbar {
+			width: 0px;
+			/* width of the entire scrollbar */
+		}
+
+		body::-webkit-scrollbar {
+			width: 0px;
+			/* width of the entire scrollbar */
+		}
+
+		::placeholder {
+			/* Chrome, Firefox, Opera, Safari 10.1+ */
+			color: white;
+			opacity: 0.4;
+			margin-left: 10px;
+			/* Firefox */
+		}
+
+		.section {
+			height: 100%;
+			scroll-snap-align: end;
+			scroll-snap-stop: always;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-attachment: fixed;
+			background-size: cover;
+			background-position: 0%;
+		}
+
+		@keyframes fade {
+			0% {
+				/* background-color: red; */
+				opacity: 0;
+				left: 100px;
+				transform: scale(0.8);
+				/* transform: rotateX(-45deg); */
+				/* backdrop-filter: blur(0px); */
+			}
+
+			100% {
+				/* background-color: black; */
+				opacity: 1;
+				left: 100px;
+				transform: scale(1);
+				/* backdrop-filter: blur(32px); */
+				/* transform: rotateX(0deg); */
+			}
+		}
+
+		.hasfade {
+			animation-name: fade;
+			animation-duration: .4s;
+			animation-fill-mode: backwards;
+			animation-timing-function: ease;
+			text-decoration: unset;
+		}
+
+		.psw {
+			transform: rotate(-55deg);
+			font-weight: bold;
+			text-decoration: unset;
+		}
+
+		.indiv {
+			text-align: center;
+			width: 100%;
+			max-width: 1200px;
+			-webkit-backdrop-filter: blur(32px) brightness(120%);
+			backdrop-filter: blur(32px) brightness(120%);
+			background-color: #66666666;
+			/* padding-left: 16px; */
+			/* padding-right: 16px; */
+			padding: 16px;
+			margin: 8px;
+			border-radius: 16px;
+		}
+
+		@media screen and (max-width: 616px) {
+			#sidebar {
+				visibility: collapse !important;
+				width: 0 !important;
+			}
+
+			#separator {
+				visibility: collapse !important;
+				width: 0 !important;
+			}
+
+			div::-webkit-scrollbar {
+				width: 0px;
+			}
+
+			#main-contain {
+				width: 100% !important;
+				height: 100% !important;
+			}
+
+			#scrolly {
+				border-radius: 0px !important;
+			}
+		}
+	</style>
+</head>
+
+<body
+	style="background-color: black; background-image: url(chat-bkg.jpg); background-size: cover; background-position: 0%;">
+	<div id="chat" class="section" style="scroll-snap-stop: normal;">
+		<div class='indiv hasfade' style="max-height: 100%;">
+			<h1>nochat</h1>
+			<p id="subt" style="margin-top: -16px;">instant, free, unlimited</p>
+			<div id="msgs"
+				style="height: fit-content; margin-left: 16px; padding-left: 0px; padding-right: 8px; display: flex; flex-direction: column; justify-content: end; max-height: 40vh; min-height: 64px; overflow-y: scroll; overflow-x: hidden;">
+			</div>
+			<div style="width: 100%; display: flex; flex-direction: row; margin-top: 16px;">
+				<button class="chat-control" id="status"
+					style="height: 30px; max-width: 100%; white-space: nowrap; margin-right: 8px; text-indent: 0px !important; background-color: #FFFF0022;">connecting</button>
+				<input type="text" id="msg" tabindex="0" style="width: 100%; height: 30px;" placeholder="Type a message"
+					onkeydown="if(event.keyCode == 13) {send();}">
+				<button class="chat-control" style="height: 30px; margin-left: 8px; text-indent: 0px !important;"
+					onclick="send()">send</button>
+			</div>
+			<div style="width: 100%; display: flex; flex-direction: row; margin-top: 8px;">
+				<input type="text" id="userid" style="width: 100%; max-width: 160px; height: 30px; margin-right: 8px;"
+					placeholder="name" onkeydown="if(event.keyCode == 13) reconnect();">
+				<input type="text" id="chatid" style="width: 100%; max-width: 160px; height: 30px; margin-right: 8px;"
+					placeholder="chatid" onkeydown="if(event.keyCode == 13) reconnect();">
+				<button class="chat-control" id="status"
+					style="height: 30px; max-width: 100%; white-space: nowrap; margin-right: 8px; text-indent: 0px !important; background-color: #FFFFFF22;"
+					onclick="reconnect()">connect</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	//document.getElementById("msg").focus();
+	clientid = "u" + parseInt(Math.random() * 10000000);
+	username = "ano" + parseInt(Math.random() * 1000);
+	chatid = "c0";
+	connect();
+	function connect() {
+		client = new Paho.MQTT.Client("mq02.cy2.me", 8080, clientid);
+		client.onMessageArrived = onMessageArrived;
+		client.onConnectionLost = onFailure;
+		deleteNext = false;
+		client.connect({
+			onSuccess: onConnect,
+			// onFailure: document.getElementById("messages").innerHTML += '<span>ERROR: Connection to: ' + host + ' on port: ' + port + ' failed.</span><br/>';
+			onFailure: onFailure,
+			useSSL: true
+		});
+	}
+	function reconnect() {
+		client.disconnect();
+		useridt = document.getElementById("userid");
+		chatidt = document.getElementById("chatid");
+		if (useridt.value != "") username = useridt.value;
+		if (chatidt.value != "" && chatidt.value != chatid) {
+			chatid = chatidt.value;
+			connect();
+		}
+		else {
+			statusindicator = document.getElementById("status");
+			statusindicator.innerHTML = username + "@" + chatid;
+			statusindicator.style.backgroundColor = "#00ff0022";
+		}
+		useridt.value = "";
+		chatidt.value = "";
+	}
+	function onFailure() {
+		console.log("failure")
+		statusindicator = document.getElementById("status");
+		statusindicator.innerHTML = "offline";
+		statusindicator.style.backgroundColor = "#ff000022";
+		client.connect({
+			onSuccess: onConnect,
+			onFailure: onFailure,
+			useSSL: true
+		});
+	}
+	function onConnect() {
+		statusindicator = document.getElementById("status");
+		statusindicator.style.backgroundColor = "#00ff0022";
+		document.getElementById("status").innerHTML = "...";
+		client.subscribe(chatid);
+		statusindicator.innerHTML = username + "@" + chatid;
+		statusindicator.style.backgroundColor = "#00ff0022";
+		console.log("Subscribed.");
+		document.getElementById("msg").focus();
+	}
+	function onMessageArrived(message) {
+		console.log("rx: " + message.payloadString);
+		if (!deleteNext) {
+			mgsg = document.getElementById("msgs");
+			msgs.innerHTML += '<p class="recieved">' + message.payloadString + '</p>';
+			msgs.scrollTop = msgs.scrollHeight;
+		}
+		deleteNext = false;
+	}
+	function onConnectionLost(responseObject) {
+		if (responseObject.errorCode !== 0) {
+			console.log("onConnectionLost:" + responseObject.errorMessage);
+		}
+	}
+	function send() {
+		elem = document.getElementById("msg");
+		message = new Paho.MQTT.Message(username + ": " + elem.value);
+		message.destinationName = chatid;
+		// var message = new Messaging.Message(elem.value);
+		// message.destinationName = chatid;
+		// // message.qos = qos;
+		client.send(message);
+		deleteNext = true;
+		msgs.innerHTML += '<p class="sent">' + username + ": " + elem.value + '</p>';
+		elem.value = "";
+		msgs.scrollTop = msgs.scrollHeight;
+		document.getElementById("msg").focus();
+	}
+</script>
+
+</html>

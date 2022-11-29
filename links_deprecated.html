@@ -1,0 +1,153 @@
+<html style="background-color: black;">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cy2 Links</title>
+</head>
+<style>
+    @import url('https://rsms.me/inter/inter.css');
+    p,
+    h1,
+    h2,
+    a,
+    td,
+    input {
+        text-align: center;
+        font-family: inter;
+        color: white;
+        font-feature-settings: "ss01";
+        letter-spacing: -0.5px;
+    }
+    
+    h1 {
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    
+    p {
+        font-size: 16px;
+    }
+    
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .link {
+        /* rgb(0, 87, 87) */
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 33.3333333%, #29554c 33.3333333%, #29554c 66.6666666%, rgb(173 238 225) 66.6666666%);
+        background-size: 300%;
+        background-position: -50%;
+        animation-name: highlightAnim;
+        animation-timing-function: cubic-bezier(0, 0.9, 0.33, 0.97);
+        animation-duration: 500ms;
+        animation-fill-mode: backwards;
+        margin: 8px;
+        padding: 4px;
+        border-radius: 2px;
+        width: fit-content;
+        animation-delay: calc(var(--anim-order)*35ms);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: 500ms cubic-bezier(0, 0.9, 0.33, 0.97);
+    }
+    
+    .link>h2 {
+        margin: 0;
+    }
+    
+    .link>h2>a {
+        color: black !important;
+        text-decoration: none;
+    }
+    
+    .link:hover {
+        background-position: -100% !important;
+        padding-left: 16px;
+    }
+    
+    .link:hover>h2>a {
+        color: white !important;
+        transition: 500ms cubic-bezier(0, 0.9, 0.33, 0.97);
+    }
+    
+    @keyframes highlightAnim {
+        0% {
+            background-position: 0%;
+        }
+    }
+    
+    @keyframes slidein {
+        0% {
+            transform: translateX(-400px) scaleX(2);
+            opacity: 0;
+        }
+    }
+    
+    .hasslidein {
+        /* animation-name: slidein; */
+        animation-timing-function: cubic-bezier(1, 0.18, 0.59, 1.15);
+        animation-duration: 0.5s;
+    }
+    
+    @media screen and (max-width: 616px) {
+        #middle-contain {
+            flex-direction: column;
+            margin-top: 0 !important;
+        }
+        #logoimage {
+            margin: 16px !important;
+        }
+        #attribution {
+            position: unset !important;
+        }
+    }
+</style>
+
+<body style="display: flex; align-items: center; justify-content: center;">
+    <div id="middle-contain" style="display: flex; align-items: center; justify-content: center; margin-top: 32px;">
+        <img id="logoImage" class="hasslidein" src="cy2logo.png" style="width: 200px; margin-right: 24px; align-self: flex-start;">
+        <div style="align-items: left; display: flex; justify-content: left; flex-direction: column;">
+            <!-- style="animation-delay: .*; -->
+            <div style="--anim-order:0" class="link">
+                <h2><a href="links.html">Homepage</a></h2>
+            </div>
+            <div style="--anim-order:1" class="link">
+                <h2><a href="links.html">Beta Homepage</a></h2>
+            </div>
+            <div style="--anim-order:2" class="link">
+                <h2><a href="links.html">CyCloud</a></h2>
+            </div>
+            <div style="--anim-order:3" class="link">
+                <h2><a href="links.html">CySupport</a></h2>
+            </div>
+            <div style="--anim-order:4" class="link">
+                <h2><a href="links.html">ReadyBeluga</a></h2>
+            </div>
+            <div style="--anim-order:5" class="link">
+                <h2><a href="links.html">The Oracle</a></h2>
+            </div>
+            <div style="--anim-order:6" class="link">
+                <h2><a href="links.html">nochat</a></h2>
+            </div>
+            <div style="--anim-order:7" class="link">
+                <h2><a href="links.html">uploadafile</a></h2>
+            </div>
+            <div style="--anim-order:8" class="link">
+                <h2><a href="links.html">4H Computers</a></h2>
+            </div>
+            <div style="--anim-order:9" class="link">
+                <h2><a href="links.html">Status Page</a></h2>
+            </div>
+            <div style="--anim-order:10" class="link">
+                <h2><a href="links.html">Stream</a></h2>
+            </div>
+            <div style="--anim-order:11" class="link">
+                <h2><a href="links.html">HTML Xperiments</a></h2>
+            </div>
+        </div>
+        <p id="attribution" style="bottom: 16px; position: fixed; color: gray;">Linkspage design by <a style="color: gray;" href="https://cy2.me/">Cy Westbrook</a></p>
+    </div>
+</body>
+
+</html>
